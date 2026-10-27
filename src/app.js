@@ -50,7 +50,7 @@ app.get('/', (req, res) => {
       getAccountDetails: `GET ${env.API_PREFIX}/accounts/:id`,
       addTransaction: `POST ${env.API_PREFIX}/transactions`,
       getTransactionHistory: `GET ${env.API_PREFIX}/accounts/:id/transactions?type=credit|debit&page=1&limit=10`,
-      transferMoneyBonus: `POST ${env.API_PREFIX}/transfers`,
+      transferMoney: `POST ${env.API_PREFIX}/transfers`,
     },
   });
 });

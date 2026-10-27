@@ -4,18 +4,15 @@ A robust, enterprise-grade RESTful Transaction Ledger API built with **Node.js**
 
 ---
 
-##  Project Overview & Answers to Requirements
+## 🌟 Project Overview
 
-### 1. Is a Frontend Required?
-> **No.** The assessment specification explicitly states: *"Build a backend API for a simple transaction ledger system"*. There is no requirement or expectation for a frontend UI. A complete Postman collection (`postman_collection.json`) and automated verification suite are provided to inspect and test all API operations.
+The **Transaction Ledger API** is a production-grade backend service designed to handle core banking and ledger operations with strict data consistency, atomicity, and immutability.
 
-### 2. Is Deployment Required?
-> **No.** The assessment document specifies: *"The application should be runnable locally using the instructions provided in the README"*. Deployment is not mandatory. However, this codebase is 100% production-ready and can be deployed with zero code changes to platforms like **Render**, **Railway**, **AWS**, or **Heroku** simply by setting the `MONGO_URI` environment variable.
-
-### 3. Are `cors`, `dotenv`, or `jwt` Required?
-- **`dotenv`**: **Required & Implemented**. Essential for securely managing environment variables (`MONGO_URI`, `PORT`, `NODE_ENV`) without hardcoding secrets in source code.
-- **`cors`**: **Required & Implemented**. Standard Express best practice allowing cross-origin requests from API clients, browsers, or external frontend applications.
-- **`jwt` (Authentication)**: **Not Required for Core Assessment**. The assignment prompt does not specify login/password/JWT requirements for the ledger endpoints. Forcing mandatory JWT would block automated evaluation scripts from directly testing transaction flows. However, to showcase enterprise readiness for the interview, a modular `authMiddleware.js` has been provided in `src/middlewares/authMiddleware.js` that can be toggled on/off via the `ENABLE_AUTH` environment flag.
+### Key Highlights
+- **ACID Transactions**: Financial operations (credit, debit, and money transfers) update account balances and ledger records atomically using MongoDB transactions.
+- **Data Integrity & Consistency**: Prevents overdrafts, rejects duplicate transactions per account via compound unique database constraints, and maintains accurate balance calculation.
+- **Transaction Immutability**: Historical financial records cannot be modified or deleted via the API (`PUT`, `PATCH`, and `DELETE` requests are rejected with `405 Method Not Allowed`).
+- **Clean Architecture**: Follows a modular Controller-Service-Repository pattern with strict validation, centralized error handling, and separation of concerns.
 
 ---
 
@@ -52,7 +49,7 @@ Ledger-API/
 │   │   ├── index.js                # Root API v1 router with health check
 │   │   ├── accountRoutes.js        # Account endpoints (/api/v1/accounts)
 │   │   ├── transactionRoutes.js    # Transaction endpoints (/api/v1/transactions)
-│   │   └── transferRoutes.js       # Bonus Transfer endpoints (/api/v1/transfers)
+│   │   └── transferRoutes.js       # Money Transfer endpoints (/api/v1/transfers)
 │   ├── utils/
 │   │   ├── apiError.js             # Custom ApiError class extending Error
 │   │   ├── apiResponse.js          # Standardized JSON response envelope
@@ -93,7 +90,7 @@ Ledger-API/
 - **Pagination**: Accepts `page` (default: 1) and `limit` (default: 10, max: 100), returning metadata: `currentPage`, `pageSize`, `totalRecords`, `totalPages`.
 - **Sorting**: Queries are ordered `latest-first` based on `created_at` (descending: `-1`), backed by an index on `{ account_id: 1, created_at: -1 }`.
 
-### 5. Bonus Feature: Atomic Money Transfer
+### 5. Money Transfer
 - Endpoint: `POST /api/v1/transfers`
 - Atomically debits funds from the source account and credits funds to the destination account.
 - Validates that both accounts exist, source has sufficient funds, and source != destination.
@@ -173,7 +170,7 @@ This verifies:
 - Compound index verification (same `reference_id` on another account)
 - Transaction history pagination, filtering, and latest-first sorting
 - Immutability check (PUT/PATCH/DELETE rejected with 405)
-- Bonus atomic transfer between accounts
+- Atomic money transfer between accounts
 
 ---
 
@@ -201,7 +198,7 @@ Base URL: `http://localhost:5000/api/v1`
 - **Request Body**:
 ```json
 {
-  "name": "Snehanshu Shekhar"
+  "name": "Snehanshu Sekhar"
 }
 ```
 - **Response `201 Created`**:
@@ -211,7 +208,7 @@ Base URL: `http://localhost:5000/api/v1`
   "message": "Account created successfully",
   "data": {
     "id": "acc_f47ac10b-58cc-4372-a567-0e02b2c3d479",
-    "name": "Snehanshu Shekhar",
+    "name": "Snehanshu Sekhar",
     "balance": 0,
     "created_at": "2026-10-26T12:01:00.000Z"
   }
@@ -250,7 +247,7 @@ Base URL: `http://localhost:5000/api/v1`
   "message": "Account details fetched successfully",
   "data": {
     "id": "acc_f47ac10b-58cc-4372-a567-0e02b2c3d479",
-    "name": "Snehanshu Shekhar",
+    "name": "Snehanshu Sekhar",
     "balance": 150,
     "created_at": "2026-10-26T12:01:00.000Z"
   }
@@ -329,17 +326,17 @@ Base URL: `http://localhost:5000/api/v1`
     }
   ],
   "pagination": {
-    "currentPage": 1,
-    "pageSize": 1,
-    "totalRecords": 1,
-    "totalPages": 1
+    "current_page": 1,
+    "page_size": 1,
+    "total_records": 1,
+    "total_pages": 1
   }
 }
 ```
 
 ---
 
-### 7. Bonus: Atomic Money Transfer
+### 7. Atomic Money Transfer
 - **`POST /transfers`**
 - **Description**: Atomically moves funds between two accounts.
 - **Request Body**:
@@ -387,7 +384,7 @@ Base URL: `http://localhost:5000/api/v1`
 
 ##  Assumptions
 
-1. **Currency & Precision**: Monetary amounts represent a standard currency (e.g. INR or USD). All values are treated as decimal numbers rounded to two decimal places to avoid standard JavaScript floating-point binary representation errors.
+1. **Currency & Precision**: Monetary amounts represent Indian Rupee (INR / ₹). All values are treated as decimal numbers rounded to two decimal places to avoid standard JavaScript floating-point binary representation errors.
 2. **Account Balances**: Negative balances are not permitted (no unauthorized overdraft). Debits that exceed the balance are rejected, and the balance remains untouched.
 3. **Identifier Format**: UUIDv4 with semantic prefixes (`acc_` and `txn_`) was selected for clean readability and security (avoiding serial enumeration attacks and avoiding internal database `_id` leakage).
 4. **Authentication & Authorization**: Following standard assessment guidelines, authentication (such as JWT) is not enforced on the ledger endpoints to allow seamless automated evaluator testing. A modular authentication middleware is provided in `src/middlewares/authMiddleware.js` for enterprise extension.

@@ -1,5 +1,6 @@
 const transactionService = require('../services/transactionService');
 const ApiResponse = require('../utils/apiResponse');
+const ApiError = require('../utils/apiError');
 
 /**
  * Controller handling Transaction HTTP requests.
@@ -30,18 +31,17 @@ class TransactionController {
   /**
    * Handle fetching transaction history for an account.
    * Supports filtering (by type: credit/debit), pagination (page, limit), and latest-first sorting.
-   * Route: GET /api/v1/accounts/:id/transactions
+   * Route: GET /api/v1/accounts/:id/transactions or GET /api/v1/transactions?account_id=:id
    */
   async getTransactionHistory(req, res, next) {
     try {
       const accountId = req.params.id || req.query.account_id || req.query.accountId;
-      if (!accountId) {
-        const ApiError = require('../utils/apiError');
-        throw ApiError.badRequest('account_id is required either in route parameters or query parameters');
+      if (!accountId || typeof accountId !== 'string' || accountId.trim() === '') {
+        throw ApiError.badRequest('A valid account_id is required either in route parameters or query parameters');
       }
       const { type, page, limit } = req.query;
 
-      const { transactions, pagination } = await transactionService.getTransactionHistory(accountId, {
+      const { transactions, pagination } = await transactionService.getTransactionHistory(accountId.trim(), {
         type,
         page,
         limit,

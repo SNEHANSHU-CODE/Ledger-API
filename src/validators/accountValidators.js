@@ -7,11 +7,11 @@ const ApiError = require('../utils/apiError');
  * - client is not allowed to set initial balance
  */
 const validateCreateAccount = (req, res, next) => {
-  const { name, balance } = req.body;
-
   if (!req.body || typeof req.body !== 'object' || Object.keys(req.body).length === 0) {
     return next(ApiError.badRequest('Request body cannot be empty'));
   }
+
+  const { name, balance } = req.body;
 
   // Name validation
   if (name === undefined || name === null || typeof name !== 'string' || name.trim() === '') {

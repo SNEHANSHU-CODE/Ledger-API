@@ -6,7 +6,7 @@ const router = express.Router();
 
 /**
  * @route   POST /api/v1/transfers
- * @desc    Bonus: Atomically transfer money between two accounts
+ * @desc    Atomically transfer money between two accounts
  * @access  Public
  */
 router.post('/', validateTransfer, transferController.transferMoney);

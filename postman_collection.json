@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "b3e05a8d-7c2a-4f51-b8ef-1f7c3e459012",
     "name": "Transaction Ledger API",
-    "description": "Postman Collection for Walnut Folks Group - Full Stack Developer Assessment: Transaction Ledger API",
+    "description": "Postman Collection for Transaction Ledger REST API",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -64,7 +64,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Snehanshu Shekhar\"\n}"
+              "raw": "{\n  \"name\": \"Snehanshu Sekhar\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/accounts",
@@ -138,7 +138,7 @@
       "name": "2. Transactions",
       "item": [
         {
-          "name": "Add Credit Transaction ($100)",
+          "name": "Add Credit Transaction (₹100)",
           "request": {
             "method": "POST",
             "header": [
@@ -159,7 +159,7 @@
           }
         },
         {
-          "name": "Add Second Credit Transaction ($50)",
+          "name": "Add Second Credit Transaction (₹50)",
           "request": {
             "method": "POST",
             "header": [
@@ -180,7 +180,7 @@
           }
         },
         {
-          "name": "Add Valid Debit Transaction ($30)",
+          "name": "Add Valid Debit Transaction (₹30)",
           "request": {
             "method": "POST",
             "header": [
@@ -324,7 +324,7 @@
       ]
     },
     {
-      "name": "3. Bonus: Money Transfer",
+      "name": "3. Money Transfer",
       "item": [
         {
           "name": "Transfer Money (Account A -> Account B)",

@@ -88,7 +88,7 @@ async function runTests() {
     assert('Create Account B returns 201 Created', accBRes.status === 201);
     const accountBId = accBRes.data?.data?.id;
 
-    // 4. Credit $100 to Account A
+    // 4. Credit ₹100 to Account A
     const credit1 = await request('/transactions', {
       method: 'POST',
       body: JSON.stringify({
@@ -99,9 +99,9 @@ async function runTests() {
         reference_id: 'REF-ALICE-001',
       }),
     });
-    assert('Credit transaction of $100 returns 201 Created', credit1.status === 201);
+    assert('Credit transaction of ₹100 returns 201 Created', credit1.status === 201);
 
-    // 5. Credit $50 to Account A
+    // 5. Credit ₹50 to Account A
     const credit2 = await request('/transactions', {
       method: 'POST',
       body: JSON.stringify({
@@ -112,13 +112,13 @@ async function runTests() {
         reference_id: 'REF-ALICE-002',
       }),
     });
-    assert('Credit transaction of $50 returns 201 Created', credit2.status === 201);
+    assert('Credit transaction of ₹50 returns 201 Created', credit2.status === 201);
 
     // 6. Verify Account A balance is 150
     const balCheck1 = await request(`/accounts/${accountAId}/balance`);
     assert('Account A balance after 2 credits is exactly 150', balCheck1.data?.data?.balance === 150);
 
-    // 7. Debit $30 from Account A
+    // 7. Debit ₹30 from Account A
     const debit1 = await request('/transactions', {
       method: 'POST',
       body: JSON.stringify({
@@ -129,13 +129,13 @@ async function runTests() {
         reference_id: 'REF-ALICE-003',
       }),
     });
-    assert('Debit transaction of $30 returns 201 Created', debit1.status === 201);
+    assert('Debit transaction of ₹30 returns 201 Created', debit1.status === 201);
 
     // 8. Verify Account A balance is 120
     const balCheck2 = await request(`/accounts/${accountAId}/balance`);
     assert('Account A balance after debit is exactly 120', balCheck2.data?.data?.balance === 120);
 
-    // 9. Debit with insufficient balance ($500)
+    // 9. Debit with insufficient balance (₹500)
     const debitFailed = await request('/transactions', {
       method: 'POST',
       body: JSON.stringify({
@@ -181,8 +181,8 @@ async function runTests() {
     // 13. Transaction History Pagination & Sorting
     const history = await request(`/accounts/${accountAId}/transactions?page=1&limit=2`);
     assert('History endpoint returns 200 OK', history.status === 200);
-    assert('History pagination contains totalRecords', history.data?.pagination?.totalRecords === 3);
-    assert('History pageSize matches limit', history.data?.data?.length === 2);
+    assert('History pagination contains total_records', history.data?.pagination?.total_records === 3);
+    assert('History page_size matches limit', history.data?.pagination?.page_size === 2);
     // Verify latest-first sort
     const firstTxnTime = new Date(history.data?.data[0]?.created_at).getTime();
     const secondTxnTime = new Date(history.data?.data[1]?.created_at).getTime();
@@ -203,7 +203,7 @@ async function runTests() {
     });
     assert('Updating transaction via PUT rejected with 405 Method Not Allowed', putAttempt.status === 405);
 
-    // 16. Bonus: Atomic Money Transfer ($40 from Account A to Account B)
+    // 16. Atomic Money Transfer (₹40 from Account A to Account B)
     const transferRes = await request('/transfers', {
       method: 'POST',
       body: JSON.stringify({
@@ -214,13 +214,13 @@ async function runTests() {
         description: 'Payment from Alice to Bob',
       }),
     });
-    assert('Bonus atomic money transfer returns 200 OK', transferRes.status === 200);
+    assert('Atomic money transfer returns 200 OK', transferRes.status === 200);
 
     // 17. Verify updated balances after transfer
     const aliceFinalBal = await request(`/accounts/${accountAId}/balance`);
     const bobFinalBal = await request(`/accounts/${accountBId}/balance`);
-    assert('Alice final balance reduced by transfer amount ($120 - $40 = $80)', aliceFinalBal.data?.data?.balance === 80);
-    assert('Bob final balance increased by transfer amount ($75 + $40 = $115)', bobFinalBal.data?.data?.balance === 115);
+    assert('Alice final balance reduced by transfer amount (₹120 - ₹40 = ₹80)', aliceFinalBal.data?.data?.balance === 80);
+    assert('Bob final balance increased by transfer amount (₹75 + ₹40 = ₹115)', bobFinalBal.data?.data?.balance === 115);
 
     // Summary
     console.log(`\n${colors.bold}----------------------------------------------------`);

@@ -17,19 +17,8 @@ class ApiResponse {
       data,
     };
 
-    // If data is a non-array object, surface fields at root for flexible test suite compatibility
-    if (data && typeof data === 'object' && !Array.isArray(data)) {
-      Object.assign(payload, data);
-    }
-
-    // If data is an array, surface transactions alias at root
-    if (Array.isArray(data)) {
-      payload.transactions = data;
-    }
-
     if (meta !== undefined) {
       payload.pagination = meta;
-      Object.assign(payload, meta);
     }
 
     return res.status(statusCode).json(payload);

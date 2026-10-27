@@ -185,12 +185,10 @@ class TransferService {
       );
 
       if (!destAccount) {
-        // Destination missing -> rollback source account
-        await Account.updateOne({ id: from_account_id }, { $inc: { balance: amount } });
         throw ApiError.notFound(`Destination account '${to_account_id}' does not exist`);
       }
     } catch (destErr) {
-      // Rollback source account
+      // Rollback source account once if destination update failed
       await Account.updateOne({ id: from_account_id }, { $inc: { balance: amount } });
       throw destErr;
     }

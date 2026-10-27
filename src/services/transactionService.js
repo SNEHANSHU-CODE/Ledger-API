@@ -191,7 +191,7 @@ class TransactionService {
 
     // 3. Count total matching records for pagination metadata
     const totalRecords = await Transaction.countDocuments(filter);
-    const totalPages = Math.ceil(totalRecords / limit) || (totalRecords === 0 ? 0 : 1);
+    const totalPages = totalRecords === 0 ? 0 : Math.ceil(totalRecords / limit);
     const skip = (page - 1) * limit;
 
     // 4. Query transactions sorted by created_at in descending (latest-first) order
@@ -203,10 +203,6 @@ class TransactionService {
     return {
       transactions: transactions.map((t) => t.toJSON()),
       pagination: {
-        currentPage: page,
-        pageSize: transactions.length,
-        totalRecords,
-        totalPages,
         current_page: page,
         page_size: transactions.length,
         total_records: totalRecords,

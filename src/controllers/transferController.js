@@ -2,7 +2,7 @@ const transferService = require('../services/transferService');
 const ApiResponse = require('../utils/apiResponse');
 
 /**
- * Controller handling Bonus Money Transfer HTTP requests.
+ * Controller handling Money Transfer HTTP requests.
  */
 class TransferController {
   /**
